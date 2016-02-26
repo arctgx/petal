@@ -1,0 +1,12 @@
+<?php
+
+// 数据库配置
+return array (
+    'host'      => '127.0.0.1',
+    'port'      => '3306',
+    'user'      => 'petal',
+    'pwd'       => '112358',
+    'db'        => 'petal_beauty',
+    'charset'   => 'utf8',
+);
+
