@@ -1,5 +1,7 @@
 <?php
 
+define('RUN_START_TIME', time());
+
 // 定时路径
 define('ROOT_PATH', dirname(__FILE__)  . DIRECTORY_SEPARATOR);
 define('LIB_PATH',  ROOT_PATH . 'lib'  . DIRECTORY_SEPARATOR);

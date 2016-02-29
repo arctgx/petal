@@ -7,4 +7,10 @@ class dict {
         '抓取完成' => 1,
     );
 
+    // file 表常量
+    public static $fileStatus = array(
+        '未下载'  => 0,
+        '已下载'  => 1,
+    );
+
 }

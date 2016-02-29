@@ -5,6 +5,8 @@ class petal {
 
     // 根据 boardid 获取画板信息
     public static function boardInfo ($boardID) {
+        printf("get board info, boardID is %d\n", $boardID);
+
         $url = sprintf('http://api.huaban.com/boards/%d', $boardID);
         try {
             $data = self::curl_get($url, array());
@@ -20,6 +22,8 @@ class petal {
         }
 
         $boardInfo = $boardInfo['board'];
+        return $boardInfo;
+        /*
         return array(
             'board_id'       => $boardInfo['board_id'],
             'board_title'    => $boardInfo['title'],
@@ -29,10 +33,13 @@ class petal {
             'create_at'      => $boardInfo['created_at'],
             'updated_at'     => $boardInfo['updated_at'],
         );
+        */
     }
 
     // 根据 boardID 获取画板下所有图片列表
-    protected static function getBoardPicList($boardID) {
+    public static function getBoardPicList($boardID) {
+        printf("get board pic list, board id is %d\n", $boardID);
+
         $picList = array();
         $maxID = 0;
         $baseUrl = sprintf("http://api.huaban.com/boards/%d/pins/?limit=20", $boardID);
@@ -44,6 +51,7 @@ class petal {
                 $url = $baseUrl."&max=".$maxID;
             }
 
+            printf("url %s\n", $url);
             try {
                 $data = self::curl_get($url, array());
             } catch (Exception $e) {
@@ -52,7 +60,7 @@ class petal {
             }
 
             $boardPicList = json_decode($data, true);
-            if ($boardInfo === NULL) {
+            if ($boardPicList === NULL) {
                 printf("json_decode fail, boardID %d, data %s\n", $boardID, $data);
                 break;
             }
@@ -60,11 +68,17 @@ class petal {
             if (empty($boardPicList)) {
                 break;
             }
-
+            // var_dump($boardPicList);exit();
             foreach ($boardPicList as $onePic) {
-                # code...
+                $maxID = $onePic['pin_id'];
+                $picList[] = $onePic;
             }
+
+            // for test
+            // break;
         }
+
+        return $picList;
     }
 
     protected static function curl_get($url, $params) {

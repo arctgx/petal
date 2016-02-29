@@ -45,6 +45,7 @@ CREATE TABLE `board_pic` (
     `user_id` bigint(20) NOT NULL COMMENT '用户id',
     `file_id` bigint(20) NOT NULL COMMENT '图片id',
     `create_time` int NOT NULL COMMENT '生成时间',
+    `update_time` int NOT NULL COMMENT '更新时间',
     `status` int NOT NULL DEFAULT 0 COMMENT '状态 0 需要更新 1 不需要',
 
     PRIMARY KEY (`id`),
