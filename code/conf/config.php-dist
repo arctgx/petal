@@ -1,0 +1,5 @@
+<?php
+return array(
+    // 图片下载路径
+    'download_path' => 'D:\\download\\petal\\',
+);

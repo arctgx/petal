@@ -9,6 +9,8 @@ define('CONF_PATH', ROOT_PATH . 'conf' . DIRECTORY_SEPARATOR);
 define('LOG_PATH',  ROOT_PATH . 'log'  . DIRECTORY_SEPARATOR);
 define('TASK_PATH', ROOT_PATH . 'task' . DIRECTORY_SEPARATOR);
 
+// 设置时区
+date_default_timezone_set('Asia/Shanghai');
 
 // 设置自动加载
 function my_loader($class) {

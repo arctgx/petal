@@ -14,6 +14,36 @@ class dao_file {
         return empty($ret) ? array() : $ret;
     }
 
+    // 获取未下载的图片信息
+    public static function getUndlPicList($startID, $reqNum) {
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE id>:id AND dl_status=%d LIMIT :req_num',
+            self::$table_name, dict::$fileStatus['未下载']
+        );
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id',         $startID,                       PDO::PARAM_INT);
+        $stmt->bindParam(':req_num',    $reqNum,                        PDO::PARAM_INT);
+        $stmt->execute();
+        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // var_dump($ret);
+        return empty($ret) ? array() : $ret;
+    }
+
+    // 更新状态
+    public static function upPicDownloaded($id) {
+        $sql = sprintf(
+            'UPDATE %s SET dl_status=%d, dl_time=%d WHERE id=:id',
+            self::$table_name, dict::$fileStatus['已下载'], time()
+        );
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $ret = $stmt->execute();
+        // printf("no %s err %s\n", serialize($stmt->errorCode()), serialize($stmt->errorInfo()));
+        return $ret;
+    }
+
     // 保存一个board
     public static function save($fileInfo) {
         $curTime = time();
