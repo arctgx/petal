@@ -23,28 +23,36 @@ class spiderTask extends task_base {
         $boardData = ConvertData::extractBoardDataFromBoardInfo($boardInfo);
         Util::upOneBoardToDB($boardData);
 
-        $picListData = petal::getBoardPicList($boardID);
-        $curTime = time();
-        foreach ($picListData as $onePic) {
-            // var_dump($onePic);exit();
+        $maxID = 0;
+        while (true) {
+            $picListData = petal::getBoardPicList($boardID, $maxID);
+            if (empty($picListData)) {
+                break;
+            }
 
-            // 更新 画板与图片的从属关系
-            Util::upOnePicToDB($onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
+            $curTime = time();
+            foreach ($picListData as $onePic) {
+                // var_dump($onePic);exit();
+                $maxID = $onePic['pin_id'];
 
-            // 更新图片信息
-            $fileInfo = $onePic['file'];
-            $picData = array(
-                'file_id'       => $onePic['file_id'],
-                'file_key'      => $fileInfo['key'],
-                'file_type'     => $fileInfo['type'],
-                'raw_text'      => (string)$onePic['raw_text'],
-                'create_time'   => $curTime,
-                'dl_time'       => 0,
-                'dl_status'     => dict::$fileStatus['未下载'],
-            );
-            Util::upOnePic($picData);
+                // 更新 画板与图片的从属关系
+                Util::upOnePicToDB($onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
 
+                // 更新图片信息
+                $fileInfo = $onePic['file'];
+                $picData = array(
+                    'file_id'       => $onePic['file_id'],
+                    'file_key'      => $fileInfo['key'],
+                    'file_type'     => $fileInfo['type'],
+                    'raw_text'      => (string)$onePic['raw_text'],
+                    'create_time'   => $curTime,
+                    'dl_time'       => 0,
+                    'dl_status'     => dict::$fileStatus['未下载'],
+                );
+                Util::upOnePic($picData);
+            }
         }
+
 
         printf("task end at %s\n", date('Y-m-d H:i:s'));
     }

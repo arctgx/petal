@@ -37,45 +37,38 @@ class petal {
     }
 
     // 根据 boardID 获取画板下所有图片列表
-    public static function getBoardPicList($boardID) {
-        printf("get board pic list, board id is %d\n", $boardID);
+    public static function getBoardPicList($boardID, $maxID) {
+        printf("get board pic list, board %d maxid[%d]\n", $boardID, $maxID);
 
         $picList = array();
-        $maxID = 0;
-        $baseUrl = sprintf("http://api.huaban.com/boards/%d/pins/?limit=20", $boardID);
+        if ($maxID==0) {
+            $url = sprintf("http://api.huaban.com/boards/%d/pins/?limit=20", $boardID);
+        } else {
+            $url = sprintf("http://api.huaban.com/boards/%d/pins/?limit=20&max=%d", $boardID, $maxID);
+        }
 
-        while (true) {
-            if ($maxID == 0) {
-                $url = $baseUrl;
-            } else {
-                $url = $baseUrl."&max=".$maxID;
-            }
+        try {
+            $data = self::curl_get($url, array());
+        } catch (Exception $e) {
+            printf("%s\n", $e->getMessage());
+            return $picList;
+        }
 
-            printf("url %s\n", $url);
-            try {
-                $data = self::curl_get($url, array());
-            } catch (Exception $e) {
-                printf("%s\n", $e->getMessage());
-                break;
-            }
+        $boardPicList = json_decode($data, true);
+        if ($boardPicList === NULL) {
+            printf("json_decode fail, boardID %d, data %s\n", $boardID, $data);
+            return $picList;
+        }
 
-            $boardPicList = json_decode($data, true);
-            if ($boardPicList === NULL) {
-                printf("json_decode fail, boardID %d, data %s\n", $boardID, $data);
-                break;
-            }
-            $boardPicList = $boardPicList['pins'];
-            if (empty($boardPicList)) {
-                break;
-            }
-            // var_dump($boardPicList);exit();
-            foreach ($boardPicList as $onePic) {
-                $maxID = $onePic['pin_id'];
-                $picList[] = $onePic;
-            }
+        $boardPicList = $boardPicList['pins'];
+        if (empty($boardPicList)) {
+            return $picList;
+        }
 
-            // for test
-            // break;
+        // var_dump($boardPicList);exit();
+        foreach ($boardPicList as $onePic) {
+            $maxID = $onePic['pin_id'];
+            $picList[] = $onePic;
         }
 
         return $picList;
