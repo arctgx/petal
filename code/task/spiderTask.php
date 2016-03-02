@@ -10,7 +10,6 @@ class spiderTask extends task_base {
         $boardID = $this->getParam('boardID', 0);
         if ($boardID<=0) {
             printf("invalid boardID %d\n", $boardID);
-            exit();
         } else {
             printf("boardID %d\n", $boardID);
         }
@@ -61,17 +60,21 @@ class spiderTask extends task_base {
     public function beautyAction() {
         printf("task start at %s\n", date('Y-m-d H:i:s'));
 
-        $processNum = $this->getParam('processNum', 10);
-        if ($processNum<=0) {
-            printf("invalid param processNum[%d]\n", $processNum);
-            exit();
+        $all = $this->getParam('all', 0);
+        $beauryCategoryID = 1;
+        if ($all) {
+            $max = 0;
         } else {
-            printf("param processNum[%d]\n", $processNum);
+            $info = dao_Category::getInfoByID($beauryCategoryID);
+            // var_dump($info);exit();
+            $max = $info['last_pin_id'];
         }
+        printf("max id %d\n", $max);
 
-        $max = 0;
         $cnt = 0;
-        while ($cnt<=$processNum) {
+        while (true) {
+            dao_Category::upPinID($beauryCategoryID, $max);
+
             $picList = petal::getBeautyPicList($max);
             if (empty($picList)) {
                 break;
@@ -85,30 +88,32 @@ class spiderTask extends task_base {
 
                 $boardData = ConvertData::extractBoardDataFromBoardInfo($onePic['board']);
                 Util::upOneBoardToDB($boardData);
-
-                Util::upOnePicToDB($onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
-
-                $fileInfo = $onePic['file'];
-                $picData = array(
-                    'file_id'       => $onePic['file_id'],
-                    'file_key'      => $fileInfo['key'],
-                    'file_type'     => $fileInfo['type'],
-                    'raw_text'      => (string)$onePic['raw_text'],
-                    'create_time'   => $curTime,
-                    'dl_time'       => 0,
-                    'dl_status'     => dict::$fileStatus['未下载'],
-                );
-                $ret = Util::upOnePic($picData);
-                if ($ret===true) {
-                    $cnt++;
-                }
-                if ($cnt<=$processNum) {
-                    break;
-                }
             }
         }
 
         printf("task end at %s, process %d\n", date('Y-m-d H:i:s'), $cnt);
+    }
+
+    // 从数据库里更新
+    public function boardPicAction() {
+        printf("task begin at %s\n", date('Y-m-d H:i:s'));
+
+        $lastID = 0;
+        while (true) {
+            $boardList = dao_board::getNeedProcessBoardList($lastID, 10);
+            if (empty($boardList)) {
+                break;
+            }
+            foreach ($boardList as $oneBoard) {
+                $lastID = $oneBoard['id'];
+                // todo
+                var_dump($oneBoard);
+            }
+            printf("last id %d\n", $lastID);
+            break; // for test
+        }
+
+        printf("task end at %s\n", date('Y-m-d H:i:s'));
     }
 
 }

@@ -2,6 +2,20 @@ CREATE DATABASE petal_beauty DEFAULT CHARACTER SET utf8;
 
 USE `petal_beauty`;
 
+-- 更新任务
+DROP TABLE IF EXISTS `category`;
+CREATE TABLE `category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(64) NOT NULL COMMENT '名称',
+  `url_key` varchar(46) NOT NULL COMMENT 'url关键词',
+  `update_time` int NOT NULL COMMENT '最后更新时间',
+  `last_pin_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '最后更新的 pin_id',
+
+  PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='分类表';
+INSERT INTO `category` (`name`, `url_key`, `update_time`, `last_pin_id`) VALUES ('美女', 'beauty', 0, 0);
+
 -- 用户
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (

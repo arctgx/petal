@@ -99,4 +99,20 @@ class dao_board {
         return $ret;
     }
 
+    // 获取需要处理的board列表
+    public static function getNeedProcessBoardList($lastID, $reqNum) {
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE id>:board_id AND status=%d LIMIT :req_num',
+            self::$table_name, dict::$boradStatus['待抓取']
+        );
+        // printf("sql %s\n", $sql);
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':board_id', $lastID,  PDO::PARAM_INT);
+        $stmt->bindParam(':req_num',  $reqNum,  PDO::PARAM_INT);
+        $stmt->execute();
+        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return empty($ret) ? array() : $ret;
+    }
+
 }

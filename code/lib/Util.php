@@ -2,12 +2,22 @@
 
 class Util {
 
+    protected static $_user_dict = array();
+
+    protected static $_board_dict = array();
+
     // 更新一个用户信息
     public static function upOneUser($userInfo) {
+        if (isset(self::$_user_dict[$userInfo['user_id']])) {
+            return 1;
+        }
+        self::$_user_dict[$userInfo['user_id']] = 1;
+
         $savedUserInfo = dao_user::getByUserID($userInfo['user_id']);
         if (!empty($savedUserInfo)) {
             printf("already has user,  id[%d] name[%s]\n", $userInfo['user_id'], $userInfo['user_name']);
-            return true;
+            self::$_user_dict[$userInfo['user_id']] = 1;
+            return 1;
         }
 
         $ret = dao_user::save($userInfo);
@@ -17,6 +27,12 @@ class Util {
 
     // 更新一个画板信息
     public static function upOneBoardToDB($boardInfo) {
+        $boardID = $boardInfo['board_id'];
+        if (isset(self::$_board_dict[$boardID]) && self::$_board_dict[$boardID]>RUN_START_TIME) {
+            return 1;
+        }
+        self::$_board_dict[$boardID] = 1;
+
         $savedBoardInfo = dao_board::getByBoardID($boardInfo['board_id']);
 
         $action = '';
