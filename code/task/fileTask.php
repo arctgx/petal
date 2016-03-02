@@ -9,7 +9,7 @@ class fileTask extends task_base {
         $total = $success = $fail = 0;
         while (true) {
             $picInfoList = dao_file::getUndlPicList($lastID, 10);
-            var_dump($picInfoList);
+            // var_dump($picInfoList);
             if (empty($picInfoList)) {
                 break;
             }

@@ -20,13 +20,14 @@ class dao_user {
 
         $db = DbManager::getDB();
         $sql = sprintf(
-            'INSERT INTO %s (user_id, user_name, create_time) values (:user_id, :user_name, :create_time)',
+            'INSERT INTO %s (user_id, user_name, user_url, create_time) values (:user_id, :user_name, :user_url, :create_time)',
             self::$table_name
         );
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(':user_id',      $userInfo['user_id'],    PDO::PARAM_STR);
-        $stmt->bindParam(':user_name',    $userInfo['user_name'],  PDO::PARAM_INT);
+        $stmt->bindParam(':user_name',    $userInfo['user_name'],  PDO::PARAM_STR);
+        $stmt->bindParam(':user_url',     $userInfo['user_url'],   PDO::PARAM_STR);
         $stmt->bindParam(':create_time',  $curTime,                PDO::PARAM_INT);
 
         $ret = $stmt->execute();

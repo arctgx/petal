@@ -49,13 +49,13 @@ class Util {
         return $ret;
     }
 
-    // 更新文件信息
+    // 更新文件信息 1 已经有不需要再更新 true 更新成功 false 更新失败
     public static function upOnePic($picInfo) {
 
         $fileSaveInfo = dao_file::getByFileID($picInfo['file_id']);
         if (!empty($fileSaveInfo)) {
             printf("file %d is saved\n", $picInfo['file_id']);
-            return true;
+            return 1;
         }
 
         $ret = dao_file::save($picInfo);

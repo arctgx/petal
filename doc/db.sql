@@ -8,6 +8,7 @@ CREATE TABLE `user` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL COMMENT '用户id',
   `user_name` varchar(128) NOT NULL COMMENT '用户姓名',
+  `user_url`  varchar(128) NOT NULL DEFAULT '' COMMENT '访问url',
   `create_time` int NOT NULL COMMENT '创建时间',
 
   PRIMARY KEY (`id`)

@@ -23,10 +23,30 @@ function useage() {
     printf("php -f cli.php class_name method_name\n");
 }
 
+function getParams($cliParams, $skipNum=3) {
+    $retParams = array();
+    for($i=0; $i<$skipNum && !empty($cliParams); ++$i) {
+        array_shift($cliParams);
+    }
+    if (!empty($cliParams)) {
+        foreach ($cliParams as $one) {
+            if (false === ($idx = strpos($one, '='))) {
+                continue;
+            }
+            $key = substr($one, 0, $idx);
+            $val = substr($one, $idx + 1);
+            $retParams[$key] = $val;
+        }
+    }
+    return $retParams;
+}
+
+
 if ($_SERVER['argc'] < 3) {
     useage();
     exit(0);
 }
+
 
 $className  = $_SERVER['argv'][1].'Task';
 $methodName = $_SERVER['argv'][2].'Action';
@@ -37,6 +57,7 @@ if (!file_exists($classFile)) {
     useage();
     exit(0);
 }
+
 require_once $classFile;
 
 if (!class_exists($className)) {
@@ -45,12 +66,21 @@ if (!class_exists($className)) {
     exit(0);
 }
 
-$cliTask = new $className();
+
+$params = getParams($_SERVER['argv']);
+// var_dump($_SERVER['argv']); var_dump($params);exit();
+
+$cliTask = new $className($params);
 if (!method_exists($cliTask, $methodName)) {
     printf("invalid method\n");
     useage();
     exit(0);
 }
 
-$cliTask->$methodName();
 
+// 运行程序
+try {
+    $cliTask->$methodName();
+} catch (Exception $e) {
+    printf("error %s\n", $e->getMessage());
+}

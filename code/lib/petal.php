@@ -81,6 +81,32 @@ class petal {
         return $picList;
     }
 
+    // 获取美女分类下的图片列表
+    public static function getBeautyPicList($max=0) {
+        printf("get beauty class info, max is %d\n", $max);
+
+        if ($max==0) {
+            $url = sprintf('http://api.huaban.com/favorite/beauty?limit=20');
+        } else {
+            $url = sprintf('http://api.huaban.com/favorite/beauty?max=%d&limit=20', $max);
+        }
+
+        try {
+            $data = self::curl_get($url, array());
+        } catch (Exception $e) {
+            printf("%s\n", $e->getMessage());
+            return false;
+        }
+
+        $beautyInfo = json_decode($data, true);
+        if ($beautyInfo === NULL) {
+            printf("json_decode fail, max %d, data %s\n", $max, $data);
+            return false;
+        }
+
+        return isset($beautyInfo['pins']) ? $beautyInfo['pins'] : array();
+    }
+
     protected static function curl_get($url, $params) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,            $url);
@@ -96,5 +122,4 @@ class petal {
         curl_close($ch);
         return $data;
     }
-
 }
