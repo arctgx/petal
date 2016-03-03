@@ -56,6 +56,7 @@ CREATE TABLE `board` (
 DROP TABLE IF EXISTS `board_pic`;
 CREATE TABLE `board_pic` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `pin_id` bigint(20) NOT NULL COMMENT '采集id',
     `board_id` bigint(20) NOT NULL COMMENT '画板id',
     `user_id` bigint(20) NOT NULL COMMENT '用户id',
     `file_id` bigint(20) NOT NULL COMMENT '图片id',
@@ -64,8 +65,8 @@ CREATE TABLE `board_pic` (
     `status` int NOT NULL DEFAULT 0 COMMENT '状态 0 需要更新 1 不需要',
 
     PRIMARY KEY (`id`),
-    UNIQUE KEY `board_pic` (`board_id`, `file_id`)
-
+    UNIQUE KEY `board_pic` (`board_id`, `file_id`),
+    UNIQUE KEY `pin_id` (`pin_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='画板-图片关联表';
 
 -- file

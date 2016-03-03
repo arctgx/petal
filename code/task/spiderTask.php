@@ -35,7 +35,7 @@ class spiderTask extends task_base {
                 $maxID = $onePic['pin_id'];
 
                 // 更新 画板与图片的从属关系
-                Util::upOnePicToDB($onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
+                Util::upOnePicToDB($onePic['pin_id'], $onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
 
                 // 更新图片信息
                 $fileInfo = $onePic['file'];
@@ -51,7 +51,7 @@ class spiderTask extends task_base {
                 Util::upOnePic($picData);
             }
         }
-
+        dao_board::setProcessed($boardID);
 
         printf("task end at %s\n", date('Y-m-d H:i:s'));
     }
@@ -107,10 +107,51 @@ class spiderTask extends task_base {
             foreach ($boardList as $oneBoard) {
                 $lastID = $oneBoard['id'];
                 // todo
-                var_dump($oneBoard);
+                // var_dump($oneBoard);
+
+                $boardID = $oneBoard['board_id'];
+                $boardInfo = petal::boardInfo($boardID);
+
+                $userData = ConvertData::extractUserDataFromBoardInfo($boardInfo);
+                Util::upOneUser($userData);
+
+                $boardData = ConvertData::extractBoardDataFromBoardInfo($boardInfo);
+                Util::upOneBoardToDB($boardData);
+
+                $maxID = 0;
+                while (true) {
+                    $picListData = petal::getBoardPicList($boardID, $maxID);
+                    if (empty($picListData)) {
+                        break;
+                    }
+
+                    $curTime = time();
+                    foreach ($picListData as $onePic) {
+                        // var_dump($onePic);exit();
+                        $maxID = $onePic['pin_id'];
+
+                        // 更新 画板与图片的从属关系
+                        Util::upOnePicToDB($onePic['pin_id'], $onePic['board_id'], $onePic['file_id'], $onePic['user_id']);
+
+                        // 更新图片信息
+                        $fileInfo = $onePic['file'];
+                        $picData = array(
+                            'file_id'       => $onePic['file_id'],
+                            'file_key'      => $fileInfo['key'],
+                            'file_type'     => $fileInfo['type'],
+                            'raw_text'      => (string)$onePic['raw_text'],
+                            'create_time'   => $curTime,
+                            'dl_time'       => 0,
+                            'dl_status'     => dict::$fileStatus['未下载'],
+                        );
+                        Util::upOnePic($picData);
+                    }
+                }
+                dao_board::setProcessed($boardID);
+
             }
             printf("last id %d\n", $lastID);
-            break; // for test
+            // break; // for test
         }
 
         printf("task end at %s\n", date('Y-m-d H:i:s'));

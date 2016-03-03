@@ -106,6 +106,7 @@ class petal {
         curl_setopt($ch, CURLOPT_HEADER,         0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT,        5);
 
         if (curl_errno($ch)) {
             $msg = sprintf("curl_err, url, no %d, msg[%s]", $url, curl_errno($ch), curl_error($ch));

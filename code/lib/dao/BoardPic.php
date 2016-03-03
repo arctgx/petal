@@ -7,12 +7,13 @@ class dao_BoardPic {
     public static function saveAndUp ($data) {
         $curTime = time();
         $sql = sprintf(
-            'INSERT INTO %s (board_id, user_id, file_id, create_time, update_time) values (:board_id, :user_id, :file_id, :create_time, :update_time) ON DUPLICATE KEY UPDATE update_time=:update_time',
+            'INSERT INTO %s (pin_id, board_id, user_id, file_id, create_time, update_time) values (:pin_id, :board_id, :user_id, :file_id, :create_time, :update_time) ON DUPLICATE KEY UPDATE update_time=:update_time',
             self::$table_name
         );
 
         $db = DbManager::getDB();
         $stmt = $db->prepare($sql);
+        $stmt->bindParam(':pin_id',      $data['pin_id'],   PDO::PARAM_INT);
         $stmt->bindParam(':board_id',    $data['board_id'], PDO::PARAM_INT);
         $stmt->bindParam(':user_id',     $data['user_id'],  PDO::PARAM_INT);
         $stmt->bindParam(':file_id',     $data['file_id'],  PDO::PARAM_INT);

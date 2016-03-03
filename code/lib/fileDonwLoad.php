@@ -18,6 +18,10 @@ class fileDonwLoad {
         if (self::$_dl_path == '') {
             $taskConf = config::getTaskConf();
             self::$_dl_path = $taskConf['download_path'];
+            if (SYS == 'WIN') {
+                self::$_dl_path = mb_convert_encoding(self::$_dl_path, 'gbk', 'utf8');
+            }
+            // var_dump(self::$_dl_path);exit();
         }
     }
 
@@ -37,7 +41,7 @@ class fileDonwLoad {
 
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_FILE, $fhOutput);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         $ret = curl_exec($ch);
         if ($ret==false) {
             printf("curl return false, url[%s] time[%s], httpcode[%d], errno[%d], error[%s]\n", $url, date('Y-m-d H:i:s'), curl_getinfo($ch, CURLINFO_HTTP_CODE), curl_errno($ch), curl_error($ch));

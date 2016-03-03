@@ -52,16 +52,17 @@ class Util {
     }
 
     // 更新图片信息列表
-    public static function upOnePicToDB($boardID, $picID, $userID) {
+    public static function upOnePicToDB($pinID, $boardID, $picID, $userID) {
         $curTime = time();
         $data = array(
+            'pin_id'        => $pinID,
             'board_id'      => $boardID,
             'user_id'       => $userID,
             'file_id'       => $picID,
             'create_time'   => time(),
         );
         $ret = dao_BoardPic::saveAndUp($data);
-        printf("save&up board_pic, board_id[%d] pic_id[%d] ret[%d]\n", $boardID, $picID, intval($ret));
+        printf("save&up board_pic, pin_id[%d] board_id[%d] pic_id[%d] ret[%d]\n", $pinID, $boardID, $picID, intval($ret));
         return $ret;
     }
 

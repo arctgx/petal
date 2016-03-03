@@ -115,4 +115,16 @@ class dao_board {
         return empty($ret) ? array() : $ret;
     }
 
+    public static function setProcessed ($boardID) {
+        $sql = sprintf(
+            'UPDATE %s SET status=%d, update_time=%d WHERE board_id=:board_id',
+            self::$table_name, dict::$boradStatus['抓取完成'], time()
+        );
+
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':board_id', $boardID, PDO::PARAM_INT);
+        $ret = $stmt->execute();
+        return $ret;
+    }
 }

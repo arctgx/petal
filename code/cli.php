@@ -1,5 +1,11 @@
 <?php
 
+if (PHP_OS == 'WINNT') {
+    define('SYS', 'WIN');
+} else {
+    define('SYS', 'LINUX');
+}
+
 define('RUN_START_TIME', time());
 
 // 定时路径
