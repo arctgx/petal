@@ -14,6 +14,8 @@ class fileDonwLoad {
 
     protected static $_dl_path = '';
 
+    protected static $_ch = null;
+
     protected static function _init() {
         if (self::$_dl_path == '') {
             $taskConf = config::getTaskConf();
@@ -22,6 +24,7 @@ class fileDonwLoad {
                 self::$_dl_path = mb_convert_encoding(self::$_dl_path, 'gbk', 'utf8');
             }
             // var_dump(self::$_dl_path);exit();
+            self::$_ch = curl_init();
         }
     }
 
@@ -39,9 +42,19 @@ class fileDonwLoad {
         $filename = self::getFileName($key, $type);
         $fhOutput = fopen($savePath.$filename, 'w');
 
-        $ch = curl_init($url);
+        // $ch = curl_init($url);
+        $ch = curl_copy_handle(self::$_ch);
+
+        curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FILE, $fhOutput);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+        curl_setopt($ch, CURLOPT_FORBID_REUSE, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Connection: Keep-Alive',
+            'Keep-Alive: 300',
+        ));
+
         $ret = curl_exec($ch);
         if ($ret==false) {
             printf("curl return false, url[%s] time[%s], httpcode[%d], errno[%d], error[%s]\n", $url, date('Y-m-d H:i:s'), curl_getinfo($ch, CURLINFO_HTTP_CODE), curl_errno($ch), curl_error($ch));
@@ -52,15 +65,38 @@ class fileDonwLoad {
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($httpCode!=200) {
             printf("curl return http_code %d, url[%s] time[%s]\n", $httpCode, $url, date('Y-m-d H:i:s'));
-            curl_close($ch);
+            // curl_close($ch);
             return false;
         }
-        curl_close($ch);
+        // curl_close($ch);
         return true;
     }
 
+    public static function getFileInfo ($key, $type) {
+        self::_init();
 
-    protected static function getFileName($key, $type) {
+        $nameMd5 = md5($key);
+        $savePath = self::$_dl_path.$nameMd5[0].DIRECTORY_SEPARATOR.$nameMd5[1].DIRECTORY_SEPARATOR;
+        if (!is_dir($savePath)) {
+            mkdir($savePath, 0777, true);
+        }
+        $filename = self::getFileName($key, $type);
+
+        $filePath = $savePath . $filename;
+        if (!file_exists($filePath)) {
+            printf("file %s not exists\n", $filePath);
+            return false;
+        }
+
+        $fileSize = filesize($filePath);
+        $fileMd5  = md5_file($filePath);
+        return array(
+            'file_size' => $fileSize,
+            'file_md5'  => $fileMd5,
+        );
+    }
+
+    public static function getFileName($key, $type) {
         if (isset(self::$_type[$type])) {
             return $key.'.'.self::$_type[$type];
         }

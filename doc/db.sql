@@ -82,6 +82,9 @@ CREATE TABLE `file` (
     `dl_time` int NOT NULL DEFAULT 0 COMMENT '下载完成时间',
     `dl_status` tinyint NOT NULL DEFAULT 0 COMMENT '下载状态 0 未下载 1 已经下载',
 
+    `file_size` bigint NOT NULL DEFAULT 0 COMMENT '文件大小单位byte',
+    `file_md5` char(40) NOT NULL DEFAULT '' COMMENT '文件的md5值',
+
     PRIMARY KEY (`id`),
     KEY `file_id` (`file_id`),
     KEY `file_key` (`file_key`)

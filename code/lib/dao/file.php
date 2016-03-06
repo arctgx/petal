@@ -30,6 +30,22 @@ class dao_file {
         return empty($ret) ? array() : $ret;
     }
 
+    // 获取没有文件信息的图片
+    public static function getNeedCompleteInfoPicList($startID, $reqNum) {
+        $sql = sprintf(
+            'SELECT * FROM %s WHERE id>:id AND dl_status=%d AND file_size=0 LIMIT :req_num',
+            self::$table_name, dict::$fileStatus['已下载']
+        );
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id',         $startID,                       PDO::PARAM_INT);
+        $stmt->bindParam(':req_num',    $reqNum,                        PDO::PARAM_INT);
+        $stmt->execute();
+        $ret = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        // var_dump($ret);
+        return empty($ret) ? array() : $ret;
+    }
+
     // 更新状态
     public static function upPicDownloaded($id) {
         $sql = sprintf(
@@ -39,6 +55,22 @@ class dao_file {
         $db = DbManager::getDB();
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $ret = $stmt->execute();
+        // printf("no %s err %s\n", serialize($stmt->errorCode()), serialize($stmt->errorInfo()));
+        return $ret;
+    }
+
+    // 更新信息
+    public static function upPicInfo($id, $fileInfo) {
+        $sql = sprintf(
+            'UPDATE %s SET file_size=:file_size, file_md5=:file_md5 WHERE id=:id',
+            self::$table_name
+        );
+        $db = DbManager::getDB();
+        $stmt = $db->prepare($sql);
+        $stmt->bindParam(':id',        $id,                    PDO::PARAM_INT);
+        $stmt->bindParam(':file_size', $fileInfo['file_size'], PDO::PARAM_INT);
+        $stmt->bindParam(':file_md5',  $fileInfo['file_md5'],  PDO::PARAM_STR);
         $ret = $stmt->execute();
         // printf("no %s err %s\n", serialize($stmt->errorCode()), serialize($stmt->errorInfo()));
         return $ret;
