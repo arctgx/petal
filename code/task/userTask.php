@@ -31,7 +31,7 @@ class userTask extends task_base {
                 $this->upOneUserFollow($one['user_id']);
                 printf("%s %d done\n", $one['user_name'], $one['id']);
             }
-            break; // for test
+            // break; // for test
         }
 
         printf("task end at %s\n", date('Y-m-d H:i:s'));

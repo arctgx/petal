@@ -128,7 +128,7 @@ class petal {
 
             $followingData = json_decode($data, true);
             if ($followingData === NULL) {
-                printf("json_decode fail, max %d, data %s\n", $max, $data);
+                printf("json_decode fail, lastID %d, data %s\n", $lastID, $data);
                 break;
             }
             if (!isset($followingData['users']) || empty($followingData['users'])) {
@@ -182,7 +182,7 @@ class petal {
 
             $followerData = json_decode($data, true);
             if ($followerData === NULL) {
-                printf("json_decode fail, max %d, data %s\n", $max, $data);
+                printf("json_decode fail, lastID %d, data %s\n", $lastID, $data);
                 break;
             }
             if (!isset($followerData['users']) || empty($followerData['users'])) {
