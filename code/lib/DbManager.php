@@ -18,5 +18,6 @@ class DbManager {
             $dbConf['host'], $dbConf['port'], $dbConf['db'], $dbConf['charset']
         );
         self::$db = new pdo($dsn, $dbConf['user'], $dbConf['pwd']);
+        self::$db->query('set names utf8mb4');
     }
 }

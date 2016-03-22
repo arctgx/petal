@@ -100,13 +100,121 @@ class petal {
         return isset($beautyInfo['pins']) ? $beautyInfo['pins'] : array();
     }
 
-    protected static function curl_get($url, $params) {
+    // 获取某个用户的关注者
+    public static function getUserFollow($userID) {
+        printf("getUserFollow, userID %d\n", $userID);
+
+        $retList = array();
+        $lastID = 0;
+        while (true) {
+            if ($lastID==0) {
+                $url = sprintf('http://api.huaban.com/users/%s/following/?limit=20', $userID);
+                // $url = sprintf('http://huaban.com/%s/following/?limit=20', $userID);
+            } else {
+                $url = sprintf('http://api.huaban.com/users/%s/following/?max=%s&limit=20', $userID, $lastID);
+                // $url = sprintf('http://huaban.com/%s/following/?max=%s&limit=20', $userID, $lastID);
+            }
+            // printf("call url[%s]\n", $url);
+
+            try {
+                $headers = array(
+                    'X-Requested-With' => 'XMLHttpRequest',
+                );
+                $data = self::curl_get($url, array(), $headers);
+            } catch (Exception $e) {
+                printf("err %s\n", $e->getMessage());
+                break;
+            }
+
+            $followingData = json_decode($data, true);
+            if ($followingData === NULL) {
+                printf("json_decode fail, max %d, data %s\n", $max, $data);
+                break;
+            }
+            if (!isset($followingData['users']) || empty($followingData['users'])) {
+                break;
+            }
+            foreach ($followingData['users'] as $one) {
+                // var_dump($one);exit();
+                $retList[] = array(
+                    'user_id'     => $one['user_id'],
+                    'user_name'   => $one['username'],
+                    'user_url'    => $one['urlname'],
+                    // 'create_time' => $one['']
+                );
+
+                $lastID = $one['seq'];
+            }
+
+        }
+
+        return $retList;
+
+    }
+
+    // 获取某个用户的粉丝
+    public static function getUserFollower($userID) {
+        // http://api.huaban.com/users/12247884/followers/?limit=40
+        printf("getUserFollower, userID %d\n", $userID);
+
+        $retList = array();
+        $lastID = 0;
+        while (true) {
+            if ($lastID==0) {
+                $url = sprintf('http://api.huaban.com/users/%s/followers/?limit=20', $userID);
+                // $url = sprintf('http://huaban.com/%s/following/?limit=20', $userID);
+            } else {
+                $url = sprintf('http://api.huaban.com/users/%s/followers/?max=%s&limit=20', $userID, $lastID);
+                // $url = sprintf('http://huaban.com/%s/following/?max=%s&limit=20', $userID, $lastID);
+            }
+            // printf("call url[%s]\n", $url);
+
+            try {
+                // $headers = array(
+                //     'X-Requested-With' => 'XMLHttpRequest',
+                // );
+                // $data = self::curl_get($url, array(), $headers);
+                $data = self::curl_get($url, array());
+            } catch (Exception $e) {
+                printf("err %s\n", $e->getMessage());
+                break;
+            }
+
+            $followerData = json_decode($data, true);
+            if ($followerData === NULL) {
+                printf("json_decode fail, max %d, data %s\n", $max, $data);
+                break;
+            }
+            if (!isset($followerData['users']) || empty($followerData['users'])) {
+                break;
+            }
+            foreach ($followerData['users'] as $one) {
+                // var_dump($one);exit();
+                $retList[] = array(
+                    'user_id'     => $one['user_id'],
+                    'user_name'   => $one['username'],
+                    'user_url'    => $one['urlname'],
+                );
+
+                $lastID = $one['seq'];
+            }
+
+        }
+
+        return $retList;
+    }
+
+    protected static function curl_get($url, $params, $headers=array()) {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL,            $url);
         curl_setopt($ch, CURLOPT_HEADER,         0);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_TIMEOUT,        5);
+        if (is_array($headers) && !empty($headers)) {
+            $setHeader = self::convertHeader($headers);
+            curl_setopt($ch, CURLOPT_HTTPHEADER , $setHeader);
+        }
 
         if (curl_errno($ch)) {
             $msg = sprintf("curl_err, url, no %d, msg[%s]", $url, curl_errno($ch), curl_error($ch));
@@ -115,5 +223,15 @@ class petal {
         $data = curl_exec($ch);
         curl_close($ch);
         return $data;
+    }
+
+    protected static function convertHeader($headerArr) {
+        $ret = array();
+        if (is_array($headerArr) && !empty($headerArr)) {
+            foreach ($headerArr as $key => $value) {
+                $ret[] = $key.':'.$value;
+            }
+        }
+        return $ret;
     }
 }

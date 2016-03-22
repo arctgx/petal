@@ -27,7 +27,7 @@ CREATE TABLE `user` (
 
   PRIMARY KEY (`id`)
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户';
 
 -- 画板
 DROP TABLE IF EXISTS `board`;
@@ -49,7 +49,7 @@ CREATE TABLE `board` (
   key `board_id` (`board_id`),
   key `user_id` (`user_id`)
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='画板';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='画板';
 
 
 -- board_pic
@@ -67,7 +67,7 @@ CREATE TABLE `board_pic` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `board_pic` (`board_id`, `file_id`),
     UNIQUE KEY `pin_id` (`pin_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='画板-图片关联表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='画板-图片关联表';
 
 -- file
 DROP TABLE IF EXISTS `file`;
@@ -89,4 +89,36 @@ CREATE TABLE `file` (
     KEY `file_id` (`file_id`),
     KEY `file_key` (`file_key`)
 
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片文件表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='图片文件表';
+
+
+-- 用户数据分析表
+DROP TABLE  IF EXISTS `user_data`;
+CREATE TABLE `user_data` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL COMMENT '用户id',
+  `user_name` varchar(128) NOT NULL COMMENT '用户姓名',
+  `user_url`  varchar(128) NOT NULL DEFAULT '' COMMENT '访问url',
+  `create_time` int NOT NULL COMMENT '创建时间',
+  `status` tinyint NOT NULL DEFAULT 0 COMMENT '未处理',
+
+  UNIQUE INDEX `user_id` (`user_id`),
+  PRIMARY KEY (`id`)
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户数据分析表';
+
+
+-- 关注表
+DROP TABLE IF EXISTS `follow`;
+CREATE TABLE `follow` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `follow` bigint(20) NOT NULL COMMENT '被关注者用户id',
+    `follower`  bigint(20) NOT NULL COMMENT '关注者用户id',
+    `create_time` int NOT NULL COMMENT '抓取生成时间',
+
+    UNIQUE INDEX `follow` (`follow`, `follower`),
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户关注者表';
+
+
+
