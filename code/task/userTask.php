@@ -29,7 +29,7 @@ class userTask extends task_base {
             foreach ($userList as $one) {
                 $lastID = $one['id'];
                 $this->upOneUserFollow($one['user_id']);
-                printf("%s %d done\n", $one['user_name'], $one['id']);
+                printf("[%s] %s %d done\n", date('Y-m-d H:i:s'), $one['user_name'], $one['id']);
             }
             // break; // for test
         }
@@ -40,12 +40,15 @@ class userTask extends task_base {
     protected function upOneUserFollow($userID) {
         // 用户关注
         $followList = petal::getUserFollow($userID);
+        $cnt = count($followList);
         if (!empty($followerList)) {
             foreach ($followList as $oneFollow) {
                 UserData::upOneUser($oneFollow);
                 UserData::addFollow($oneFollow['user_id'], $userID);
             }
         }
+        printf("[%s] user id[%d] follow [%d]\n", date('Y-m-d H:i:s'), $userID, $cnt);
+
         // 用户粉丝
         $followerList = petal::getUserFollower($userID);
         if (!empty($followerList)) {
@@ -54,6 +57,9 @@ class userTask extends task_base {
                 UserData::addFollow($userID, $oneFollow['user_id']);
             }
         }
+        $cnt = count($followerList);
+        printf("[%s] user id[%d] follower [%d]\n", date('Y-m-d H:i:s'), $userID, $cnt);
+
         dao_UserData::setProcessed($userID);
     }
 

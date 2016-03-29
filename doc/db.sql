@@ -116,6 +116,7 @@ CREATE TABLE `follow` (
     `follower`  bigint(20) NOT NULL COMMENT '关注者用户id',
     `create_time` int NOT NULL COMMENT '抓取生成时间',
 
+    INDEX `follower` (`follower`),
     UNIQUE INDEX `follow` (`follow`, `follower`),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户关注者表';
