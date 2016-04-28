@@ -100,6 +100,32 @@ class petal {
         return isset($beautyInfo['pins']) ? $beautyInfo['pins'] : array();
     }
 
+    // 获取婚礼分类下的图片列表
+    public static function getWeddingPicList($max=0) {
+        printf("get wedding class info, max is %d\n", $max);
+
+        if ($max==0) {
+            $url = sprintf('http://api.huaban.com/favorite/wedding_events?limit=20');
+        } else {
+            $url = sprintf('http://api.huaban.com/favorite/wedding_events?max=%d&limit=20', $max);
+        }
+
+        try {
+            $data = self::curl_get($url, array());
+        } catch (Exception $e) {
+            printf("%s\n", $e->getMessage());
+            return false;
+        }
+
+        $dataInfo = json_decode($data, true);
+        if ($dataInfo === NULL) {
+            printf("json_decode fail, max %d, data %s\n", $max, $data);
+            return false;
+        }
+
+        return isset($dataInfo['pins']) ? $dataInfo['pins'] : array();
+    }
+
     // 获取某个用户的关注者
     public static function getUserFollow($userID) {
         printf("getUserFollow, userID %d\n", $userID);

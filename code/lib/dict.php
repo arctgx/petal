@@ -9,8 +9,9 @@ class dict {
 
     // file 表常量
     public static $fileStatus = array(
-        '未下载'  => 0,
-        '已下载'  => 1,
+        '未下载'   => 0,
+        '已下载'   => 1,
+        '下载失败' => 2, // 下载失败 404
     );
 
 }

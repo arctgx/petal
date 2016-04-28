@@ -80,7 +80,7 @@ CREATE TABLE `file` (
 
     `create_time` int NOT NULL COMMENT '记录生成时间',
     `dl_time` int NOT NULL DEFAULT 0 COMMENT '下载完成时间',
-    `dl_status` tinyint NOT NULL DEFAULT 0 COMMENT '下载状态 0 未下载 1 已经下载',
+    `dl_status` tinyint NOT NULL DEFAULT 0 COMMENT '下载状态 0 未下载 1 已经下载 2 下载失败(404)',
 
     `file_size` bigint NOT NULL DEFAULT 0 COMMENT '文件大小单位byte',
     `file_md5` char(40) NOT NULL DEFAULT '' COMMENT '文件的md5值',
