@@ -132,6 +132,45 @@ class spiderTask extends task_base {
         printf("task end at %s, process %d\n", date('Y-m-d H:i:s'), $cnt);
     }
 
+    // 美图分类
+    public function quotesAction() {
+        printf("task start at %s\n", date('Y-m-d H:i:s'));
+
+        $all = $this->getParam('all', 0);
+        $quotesID = 3;
+        if ($all) {
+            $max = 0;
+        } else {
+            $info = dao_Category::getInfoByID($quotesID);
+            // var_dump($info);exit();
+            $max = $info['last_pin_id'];
+        }
+        printf("max id %d\n", $max);
+
+        $cnt = 0;
+        while (true) {
+            dao_Category::upPinID($quotesID, $max);
+
+            $picList = petal::getQuotesPicList($max);
+            if (empty($picList)) {
+                break;
+            }
+
+            $curTime = time();
+            foreach ($picList as $onePic) {
+                $max = $onePic['pin_id'];
+                $userData = ConvertData::extractUserDataFromUserInfo($onePic['user']);
+                Util::upOneUser($userData);
+
+                $boardData = ConvertData::extractBoardDataFromBoardInfo($onePic['board']);
+                Util::upOneBoardToDB($boardData);
+            }
+        }
+
+        printf("task end at %s, process %d\n", date('Y-m-d H:i:s'), $cnt);
+    }
+
+
     // 从数据库里更新
     public function boardPicAction() {
         printf("task begin at %s\n", date('Y-m-d H:i:s'));
