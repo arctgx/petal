@@ -29,7 +29,24 @@ class fileDonwLoad {
     }
 
     // 下载一个图片
-    public static function dlOnePic($key, $type) {
+    public static function dlOnePic($key, $type, $retry=4) {
+        $timeOut = 8;
+        $tryTimes = 1;
+        while ($tryTimes < $retry) {
+            if ($tryTimes>1) {
+                printf("retry %s\n", $key);
+            }
+            $ret = self::_dl_one_pic($key, $type, $timeOut);
+            if ($ret) {
+                return true;
+            }
+            $timeOut *= 2;
+            $tryTimes++;
+        }
+        return false;
+    }
+
+    protected static function _dl_one_pic($key, $type, $timeOut) {
         self::_init();
 
         $url = 'http://img.hb.aicdn.com/'.$key;
@@ -47,13 +64,13 @@ class fileDonwLoad {
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_FILE, $fhOutput);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_TIMEOUT, $timeOut);
 
-        curl_setopt($ch, CURLOPT_FORBID_REUSE, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Connection: Keep-Alive',
-            'Keep-Alive: 300',
-        ));
+        // curl_setopt($ch, CURLOPT_FORBID_REUSE, false);
+        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        //     'Connection: Keep-Alive',
+        //     'Keep-Alive: 300',
+        // ));
 
         $ret = curl_exec($ch);
         if ($ret==false) {
