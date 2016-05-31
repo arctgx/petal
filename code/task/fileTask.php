@@ -53,7 +53,7 @@ class fileTask extends task_base {
                 // $ret = fileDonwLoad::dlOnePic($onePic['file_key'], $onePic['file_type']);
                 $fileInfo = fileDonwLoad::getFileInfo($onePic['file_key'], $onePic['file_type']);
                 if ($fileInfo === false) {
-                    printf("upinfo fail, id[%d] key[%s]\n", $onePic['id'], $onePic['file_key']);
+                    // printf("upinfo fail, id[%d] key[%s]\n", $onePic['id'], $onePic['file_key']);
                     $fail++;
                     continue;
                 }

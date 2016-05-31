@@ -101,7 +101,7 @@ class fileDonwLoad {
 
         $filePath = $savePath . $filename;
         if (!file_exists($filePath)) {
-            printf("file %s not exists\n", $filePath);
+            // printf("file %s not exists\n", $filePath);
             return false;
         }
 
