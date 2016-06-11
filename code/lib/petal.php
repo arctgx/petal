@@ -152,6 +152,32 @@ class petal {
         return isset($dataInfo['pins']) ? $dataInfo['pins'] : array();
     }
 
+    // 获取动漫分类下的图片列表
+    public static function getAnimePicList($max=0) {
+        printf("get quotes class info, max is %d\n", $max);
+
+        if ($max==0) {
+            $url = sprintf('http://api.huaban.com/favorite/anime?limit=20');
+        } else {
+            $url = sprintf('http://api.huaban.com/favorite/anime?max=%d&limit=20', $max);
+        }
+
+        try {
+            $data = self::curl_get($url, array());
+        } catch (Exception $e) {
+            printf("%s\n", $e->getMessage());
+            return false;
+        }
+
+        $dataInfo = json_decode($data, true);
+        if ($dataInfo === NULL) {
+            printf("json_decode fail, max %d, data %s\n", $max, $data);
+            return false;
+        }
+
+        return isset($dataInfo['pins']) ? $dataInfo['pins'] : array();
+    }
+
     // 获取某个用户的关注者
     public static function getUserFollow($userID) {
         printf("getUserFollow, userID %d\n", $userID);

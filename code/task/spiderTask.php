@@ -170,6 +170,43 @@ class spiderTask extends task_base {
         printf("task end at %s, process %d\n", date('Y-m-d H:i:s'), $cnt);
     }
 
+    // 动漫分类
+    public function animeAction() {
+        printf("task start at %s\n", date('Y-m-d H:i:s'));
+
+        $all = $this->getParam('all', 0);
+        $animeID = 4;
+        if ($all) {
+            $max = 0;
+        } else {
+            $info = dao_Category::getInfoByID($animeID);
+            // var_dump($info);exit();
+            $max = $info['last_pin_id'];
+        }
+        printf("max id %d\n", $max);
+
+        $cnt = 0;
+        while (true) {
+            dao_Category::upPinID($animeID, $max);
+
+            $picList = petal::getAnimePicList($max);
+            if (empty($picList)) {
+                break;
+            }
+
+            $curTime = time();
+            foreach ($picList as $onePic) {
+                $max = $onePic['pin_id'];
+                $userData = ConvertData::extractUserDataFromUserInfo($onePic['user']);
+                Util::upOneUser($userData);
+
+                $boardData = ConvertData::extractBoardDataFromBoardInfo($onePic['board']);
+                Util::upOneBoardToDB($boardData);
+            }
+        }
+
+        printf("task end at %s, process %d\n", date('Y-m-d H:i:s'), $cnt);
+    }
 
     // 从数据库里更新
     public function boardPicAction() {
