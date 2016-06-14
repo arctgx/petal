@@ -16,15 +16,21 @@ class fileDonwLoad {
 
     protected static $_ch = null;
 
-    protected static function _init() {
-        if (self::$_dl_path == '') {
-            $taskConf = config::getTaskConf();
-            self::$_dl_path = $taskConf['download_path'];
-            if (SYS == 'WIN') {
-                self::$_dl_path = mb_convert_encoding(self::$_dl_path, 'gbk', 'utf8');
+    public static function init() {
+        $taskConf = config::getTaskConf();
+        self::$_dl_path = $taskConf['download_path'];
+        if (SYS == 'WIN') {
+            self::$_dl_path = mb_convert_encoding(self::$_dl_path, 'gbk', 'utf8');
+        }
+        self::$_ch = curl_init();
+        $pathList = '0123456789abcdef';
+        for ($i=0; $i<strlen($pathList); ++$i) {
+            for ($j=0; $j<strlen($pathList); ++$j) {
+                $dir = self::$_dl_path.$pathList[$i].DIRECTORY_SEPARATOR.$pathList[$j].DIRECTORY_SEPARATOR;
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
             }
-            // var_dump(self::$_dl_path);exit();
-            self::$_ch = curl_init();
         }
     }
 
@@ -47,7 +53,6 @@ class fileDonwLoad {
     }
 
     protected static function _dl_one_pic($key, $type, $timeOut) {
-        self::_init();
 
         $url = 'http://img.hb.aicdn.com/'.$key;
 

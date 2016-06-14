@@ -5,6 +5,8 @@ class fileTask extends task_base {
     public function downloadAction() {
         printf("task begin at %s\n", date('Y-m-d H:i:s'));
 
+        fileDonwLoad::init();
+        // exit();
         $lastID = 0;
         $total = $success = $fail = 0;
         while (true) {
