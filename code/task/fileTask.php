@@ -27,6 +27,13 @@ class fileTask extends task_base {
                     continue;
                 }
                 dao_file::upPicDownloaded($onePic['id']);
+
+                // 获取文件信息
+                $fileInfo = fileDonwLoad::getFileInfo($onePic['file_key'], $onePic['file_type']);
+                if ($fileInfo !== false) {
+                    dao_file::upPicInfo($onePic['id'], $fileInfo);
+                }
+
                 printf("dl success, id[%d] key[%s]\n", $onePic['id'], $onePic['file_key']);
                 $success++;
                 // exit();
@@ -39,6 +46,8 @@ class fileTask extends task_base {
 
     public function infoAction() {
         printf("task begin at %s\n", date('Y-m-d H:i:s'));
+
+        fileDonwLoad::init();
 
         $lastID = 0;
         $total = $success = $fail = 0;

@@ -95,7 +95,6 @@ class fileDonwLoad {
     }
 
     public static function getFileInfo ($key, $type) {
-        self::_init();
 
         $nameMd5 = md5($key);
         $savePath = self::$_dl_path.$nameMd5[0].DIRECTORY_SEPARATOR.$nameMd5[1].DIRECTORY_SEPARATOR;
